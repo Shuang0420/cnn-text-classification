@@ -10,7 +10,7 @@ Build the cnn-text-classification Py2/Py3 Chinese version package
 
 from setuptools import setup, find_packages
 
-VERSION = 0.1.0
+VERSION = "0.1.0"
 
 
 setup_args = dict( name="classifier",
