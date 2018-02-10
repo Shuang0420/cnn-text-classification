@@ -7,7 +7,7 @@ class TextData:
     def __init__(self, standQf="./data/faq/standFAQ.txt"):
         self.standQ = None
         self.standQf = standQf
-        
+
 
     def transform_label(self):
         """
@@ -35,7 +35,6 @@ class TextData:
         Transforms various data format into standard one:
             Data format in ranking mode:
             userQ \t self.standQ => userQ##label
-
             Data format in intent mode:
             __label__faq \t userQ => userQ##label
         :return:
@@ -67,7 +66,7 @@ class TextData:
         return userQf
 
 
-    
+
     def load_data_and_labels(self, userQf, mode="rank", nlabels=0):
         """
         Loads MR polarity data from files, splits the data into words and generates labels.
@@ -99,9 +98,9 @@ class TextData:
             l[label] = 1
             y.append(l)
         return [x_text, y]
-    
-    
-    
+
+
+
     def batch_iter(self, data, batch_size, num_epochs, shuffle=True):
         """
         Generates a batch iterator for a dataset.

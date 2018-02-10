@@ -15,7 +15,8 @@ from text_cnn import TextCNN
 
 # Model Hyperparameters  faq_seg.ext
 tf.flags.DEFINE_string("model_tag", 'faq-dim-100-filter-s23n10-l2-0.1', "Tag to differentiate model (default: faq)")
-tf.flags.DEFINE_string("input_file", './data/faq/faq_seg.txt', "Input file (default: ./data/train.pos)")
+tf.flags.DEFINE_string("root_dir", '/home/shuang/sf/chatbot/wechat_yan/', "folder where to look for the models and data")
+tf.flags.DEFINE_string("input_file", 'faq/faq_seg.txt', "Input file (default: ./data/train.pos)")
 # tf.flags.DEFINE_integer("embedding_dim", 128, "Dimensionality of character embedding (default: 128)")
 tf.flags.DEFINE_integer("embedding_dim", 128, "Dimensionality of character embedding (default: 128)")
 #tf.flags.DEFINE_string("filter_sizes", "3,4,5", "Comma-separated filter sizes (default: '3,4,5')")
@@ -49,7 +50,9 @@ data = TextData()
 
 # Load data
 print("Loading data...")
-x_text, x_label = data.load_data_and_labels(FLAGS.input_file)
+
+input_path = os.path.abspath(os.path.join(FLAGS.root_dir, "data", FLAGS.input_file))
+x_text, x_label = data.load_data_and_labels(input_path)
 
 # Build vocabulary
 max_document_length = max([len(x.split(" ")) for x in x_text])
@@ -70,6 +73,7 @@ x_train, x_dev = x_shuffled[:n_train], x_shuffled[n_train:]
 y_train, y_dev = y_shuffled[:n_train], y_shuffled[n_train:]
 print("Vocabulary Size: {:d}".format(len(vocab_processor.vocabulary_)))
 print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
+
 
 
 # Training
@@ -107,7 +111,7 @@ with tf.Graph().as_default():
 
         # Output directory for models and summaries
         timestamp = str(int(time.time()))
-        out_dir = os.path.abspath(os.path.join(os.path.curdir, "save", "%s-%s" % (FLAGS.model_tag, timestamp)))
+        out_dir = os.path.abspath(os.path.join(FLAGS.root_dir, "save", "%s-%s" % (FLAGS.model_tag, timestamp)))
         print("Writing to {}\n".format(out_dir))
 
         # Summaries for loss and accuracy

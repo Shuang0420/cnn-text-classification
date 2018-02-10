@@ -13,9 +13,8 @@ from .data_helpers import TextData
 # Eval Parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 # 1518167254
-tf.flags.DEFINE_string("checkpoint_dir", "/home/shuang/sf/chatbot/wechat_yan/cnn_text_classification/cnnClassifier/save/1518167254/checkpoints", "Checkpoint directory from training run")
-tf.flags.DEFINE_string("vector_type", 'non', "Use randomly initialized vector(rand)/pre-trained vector(pre)/static and pre-trained vector(static) (default: rand)")
-
+tf.flags.DEFINE_string("root_dir", "/home/shuang/sf/chatbot/wechat_yan/", "folder where to look for the models and data")
+tf.flags.DEFINE_string("model_dir", "faq-dim-100-filter-s23n10-l2-0.1-1518245956", "Model for evaluation")
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
@@ -28,14 +27,15 @@ for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
 print("")
 
+checkpoint_dir = os.path.abspath(os.path.join(FLAGS.root_dir, "save", FLAGS.model_dir, "checkpoints"))
 
 
 class PredictModel(object):
     def __init__(self):
         self.predictData = TextData()
-        vocab_path = os.path.join(FLAGS.checkpoint_dir, "..", "vocab")
+        vocab_path = os.path.join(checkpoint_dir, "..", "vocab")
         self.vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
-        checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
+        checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
         self.graph = tf.Graph()
 
 

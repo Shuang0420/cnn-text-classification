@@ -12,8 +12,9 @@ from data_helpers import TextData
 
 # Eval Parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
-tf.flags.DEFINE_string("checkpoint_dir", "./save/faq-dim-100-filter-s23n10-l2-0.1-1518230921/checkpoints", "Checkpoint directory from training run")
-tf.flags.DEFINE_string("eval_data", "./data/faq/faq_seg.txt", "Data source for evaluation")
+tf.flags.DEFINE_string("root_dir", "/home/shuang/sf/chatbot/wechat_yan/", "folder where to look for the models and data")
+tf.flags.DEFINE_string("model_dir", "faq-dim-100-filter-s23n10-l2-0.1-1518245956", "Model for evaluation")
+tf.flags.DEFINE_string("input_file", "faq/faq_seg.txt", "Data source for evaluation")
 
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
@@ -25,17 +26,23 @@ FLAGS._parse_flags()
 print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
+
+input_path = os.path.abspath(os.path.join(FLAGS.root_dir, "data", FLAGS.input_file))
+checkpoint_dir = os.path.abspath(os.path.join(FLAGS.root_dir, "save", FLAGS.model_dir, "checkpoints"))
+
+print("{}={}".format("INPUT_PATH", input_path))
+print("{}={}".format("CHECKPOINT_DIR", checkpoint_dir))
 print("")
 
 # CHANGE THIS: Load data. Load your own data here
 td = TextData()
 
 # if data format is " 转 人工##0"
-# fname = FLAGS.eval_data
+# fname = input_path
 # elif data format is " 转 人工 \t 请 稍等"
-fname = td.transform_data(FLAGS.eval_data)
+fname = td.transform_data(input_path)
 # elif data format is "__label__faq \t 转 人工"
-# fname = td.transform_data(FLAGS.eval_data, mode="intent")
+# fname = td.transform_data(input_path, mode="intent")
 
 x_raw, y_test = [], []
 with open(fname,'r') as fr:
@@ -47,7 +54,7 @@ with open(fname,'r') as fr:
 
 
 # Map data into vocabulary
-vocab_path = os.path.join(FLAGS.checkpoint_dir, os.pardir, "vocab")
+vocab_path = os.path.join(checkpoint_dir, os.pardir, "vocab")
 vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_path)
 x_test = np.array(list(vocab_processor.transform(x_raw)))
 print(x_test)
@@ -58,7 +65,7 @@ evalData = TextData()
 
 # Evaluation
 # ==================================================
-checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
+checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
 graph = tf.Graph()
 with graph.as_default():
     session_conf = tf.ConfigProto(
